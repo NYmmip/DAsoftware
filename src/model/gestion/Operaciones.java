@@ -5,10 +5,7 @@ import model.empresa.Empresa;
 import model.usuarios.Postulante;
 import model.usuarios.Psicologo;
 
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.PrivateKey;
-import java.security.PublicKey;
+import java.security.*;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -18,7 +15,8 @@ public class Operaciones {
     private PrivateKey privateKey;
     private PublicKey publicKey;
 
-    private Operaciones(){
+    //=======HOLA BEBE======//
+    private Operaciones() throws NoSuchAlgorithmException {
         this.userFactory = new UserFactory();
         KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
         keyGen.initialize(1024);
@@ -27,7 +25,7 @@ public class Operaciones {
         this.publicKey = pair.getPublic();
     }
 
-    public static Operaciones crearIFacade(){
+    public static Operaciones crearIFacade() throws NoSuchAlgorithmException {
         if(operaciones == null) {
             operaciones = new Operaciones();
         }
