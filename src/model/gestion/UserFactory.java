@@ -1,13 +1,17 @@
 package model.gestion;
 
+import model.convocatoria.ConvocatoriaDinamica;
 import model.empresa.Empresa;
+import model.usuarios.Adapter;
 import model.usuarios.Postulante;
 import model.usuarios.Psicologo;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class UserFactory {
-    private HashMap <String, Object> usuarios = new HashMap<>();
+    private HashMap <String, Adapter> usuarios = new HashMap<>();
 
     public void createEmpresa(String user, String pass, String nit, String nombre, String direccion, String descripcion){
         Empresa temp = new Empresa();
@@ -38,11 +42,20 @@ public class UserFactory {
         this.usuarios.put(user,temp);
     }
 
-    public Object getUser(String user){
+    public Adapter getUser(String user){
         return this.usuarios.get(user);
     }
+    
+    public ArrayList<String> getAllEmpresasUsers(){
+        ArrayList <String> temp= new ArrayList<>();
+        for (Map.Entry c: usuarios.entrySet()) {
+            if(c.getValue() instanceof Empresa)
+                temp.add((String) c.getKey());
+        }
+        return temp;
+    }
 
-    public void setUser(String user, Object adapter){
+    public void setUser(String user, Adapter adapter){
         if(adapter.getClass().equals(this.usuarios.get(user).getClass())){
             this.usuarios.replace(user,adapter);
         }
@@ -52,11 +65,13 @@ public class UserFactory {
         this.usuarios.remove(user);
     }
 
-    public HashMap<String, Object> getUsuarios() {
+    public HashMap<String, Adapter> getUsuarios() {
         return usuarios;
     }
 
-    public void setUsuarios(HashMap<String, Object> usuarios) {
+    public void setUsuarios(HashMap<String, Adapter> usuarios) {
         this.usuarios = usuarios;
     }
+
+
 }

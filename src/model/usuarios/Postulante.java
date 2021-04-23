@@ -13,7 +13,7 @@ public class Postulante extends Adapter {
         this.documento = "";
     }
 
-    public Postulante(String user, String password, String tipoUsuario, String nombre, String documento) {
+    public Postulante(String user, String password, String nombre, String documento) {
         super();
         this.setUser(user);
         this.setPassword(password);

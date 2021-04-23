@@ -88,15 +88,12 @@ public class Empresa extends Adapter implements Composite{
         return (password.equals(this.password) && user.equals(this.user));
     }
 
-    public String verDatos() {
+    public String verSoloEmpresa() {
         String temp="\nEmpresa: "+getNombre()+
                 "\nNIT: "+getNit()+
                 "\nDireccion: "+getDireccion()+
                 "\nAcerca de la empresa"+
                 "\n"+descripcion;
-        for (Composite e:this.componentes) {
-            temp+="\n\n"+e.verDatos();
-        }
         return temp;
     }
 
@@ -155,7 +152,7 @@ public class Empresa extends Adapter implements Composite{
         this.componentes = componentes;
     }
 
-    public String verEsta() {
+    public String verDatos() {
         String temp="\nEmpresa: "+getNombre()+" NIT: "+getNit()+" Direccion: "+getDireccion();
         for (Composite e:this.componentes) {
             temp+="\n\n"+e.verDatos();
@@ -163,7 +160,6 @@ public class Empresa extends Adapter implements Composite{
 
         return temp;
     }
-
     //---------------------------------METODOS INTERNOS--------------------------------------//
 
     private int getIndexConvocatoria(String codigo){
