@@ -1,4 +1,4 @@
-package model.gestion;
+package control;
 
 import model.convocatoria.ConvocatoriaDinamica;
 import model.empresa.Empresa;
