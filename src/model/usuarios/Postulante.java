@@ -1,10 +1,13 @@
 package model.usuarios;
 
+import java.util.ArrayList;
+
 public class Postulante extends Adapter {
     private String user;
     private String password;
     private String nombre;
     private String documento;
+    private ArrayList<String> misConvocatoria = new ArrayList<>();
 
     public Postulante() {
         this.user = "";
@@ -53,8 +56,12 @@ public class Postulante extends Adapter {
         this.password = password;
     }
 
-    public boolean autLogin(String password, String login) {
+    public boolean autLogin(String login, String password) {
         return(this.password.equals(password) && this.user.equals(login));
+    }
+
+    public void addConvocatoria(String con){
+        this.misConvocatoria.add(con);
     }
 
 }

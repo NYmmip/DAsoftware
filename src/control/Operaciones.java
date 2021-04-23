@@ -13,6 +13,7 @@ import javax.crypto.NoSuchPaddingException;
 import java.security.*;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Map;
 
 public class Operaciones implements InterfaceProxy{
     static private Operaciones operaciones = null;
@@ -21,6 +22,7 @@ public class Operaciones implements InterfaceProxy{
 
     private Operaciones() {
         this.userFactory = new UserFactory();
+        this.registerUser("admin","admin1234","","");
     }
 
     public static Operaciones crearIFacade() throws NoSuchAlgorithmException {
@@ -33,7 +35,7 @@ public class Operaciones implements InterfaceProxy{
     public boolean registerUser(String user, String pass, String nombre, String documento){
         try {
             if(this.getUser(user) == null){
-                this.userFactory.createPsicologo(user,pass,nombre,documento);
+                this.userFactory.createPostulante(user,pass,nombre,documento);
                 return true;
             }
             return false;
@@ -56,9 +58,10 @@ public class Operaciones implements InterfaceProxy{
         }
     }
 
-    public boolean registerUser(byte[] key,String user, String pass, String nombreEmpresa, String nit, String direccion, String descripcion){
+    public boolean registerUser(byte[] key,String user, String pass, String nombreEmpresa, String nit, String direccion, String descripcion) throws IllegalBlockSizeException, NoSuchPaddingException, BadPaddingException, NoSuchAlgorithmException, InvalidKeyException {
+        String admin = this.decrypt(key);
         try {
-            if(user.equals("admin")){
+            if(admin.equals("admin")){
                 if(this.getUsuario(key,user) == null){
                     this.userFactory.createEmpresa(user,pass,nombreEmpresa,nit,direccion,descripcion);
                     return true;
@@ -79,6 +82,29 @@ public class Operaciones implements InterfaceProxy{
                 return true;
             }
             return false;
+        } catch (IllegalBlockSizeException e) {
+            e.printStackTrace();
+            return false;
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+            return false;
+        } catch (BadPaddingException e) {
+            e.printStackTrace();
+            return false;
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return false;
+        } catch (NoSuchPaddingException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean removeUser(byte[] key){
+        try {
+            String user = this.decrypt(key);
+            this.userFactory.removeUser(this.decrypt(key));
+            return true;
         } catch (IllegalBlockSizeException e) {
             e.printStackTrace();
             return false;
@@ -261,7 +287,8 @@ public class Operaciones implements InterfaceProxy{
         }
     }
 
-    public ArrayList<String> getConvocatoriasEmpresa(String empresa){
+    public ArrayList<String> getConvocatoriasEmpresa(byte[] key) throws IllegalBlockSizeException, NoSuchPaddingException, BadPaddingException, NoSuchAlgorithmException, InvalidKeyException {
+        String empresa = this.decrypt(key);
         ArrayList<String> temp= new ArrayList<>();
         int i =0;
         while (i<((Empresa) this.userFactory.getUser(empresa)).getComponentes().size()) {
@@ -273,7 +300,19 @@ public class Operaciones implements InterfaceProxy{
         return temp;
     }
 
-    public ArrayList<String> getAllConvocatorias(){
+    public ArrayList<String> getConvocatoriasEmpresa(String empresa) throws IllegalBlockSizeException, NoSuchPaddingException, BadPaddingException, NoSuchAlgorithmException, InvalidKeyException {
+        ArrayList<String> temp= new ArrayList<>();
+        int i =0;
+        while (i<((Empresa) this.userFactory.getUser(empresa)).getComponentes().size()) {
+            if(((Empresa) this.userFactory.getUser(empresa)).getConvocatoriaIndex(i) != null ){
+                temp.add(((Empresa) this.userFactory.getUser(empresa)).getConvocatoriaIndex(i).verDatos());
+            }
+            i++;
+        }
+        return temp;
+    }
+
+    public ArrayList<String> getAllConvocatorias() throws IllegalBlockSizeException, NoSuchPaddingException, BadPaddingException, NoSuchAlgorithmException, InvalidKeyException {
         ArrayList<String> temp = new ArrayList<>();
 
         for (int i = 0; i<this.userFactory.getAllEmpresasUsers().size(); i++){
@@ -339,6 +378,43 @@ public class Operaciones implements InterfaceProxy{
         }
     }
 
+    public String tipoUser(byte[] key){
+        try {
+
+            if (this.decrypt(key).equals("admin")){
+                return "admin";
+            }else {
+                if (this.userFactory.getUser(this.decrypt(key)) instanceof Empresa)
+                    return "Empresa";
+                if(this.userFactory.getUser(this.decrypt(key)) instanceof  Postulante)
+                    return "Postulante";
+
+                if (this.userFactory.getUser(this.decrypt(key)) instanceof  Psicologo)
+                    return "Postulante";
+            }
+
+
+            if (this.userFactory.getUser(this.decrypt(key)) instanceof Empresa)
+                return "Empresa";
+        } catch (IllegalBlockSizeException e) {
+            e.printStackTrace();
+            return null;
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+            return null;
+        } catch (BadPaddingException e) {
+            e.printStackTrace();
+            return null;
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return null;
+        } catch (NoSuchPaddingException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return null;
+    }
+
 
     @Override
     public String performOperation() throws NoSuchAlgorithmException {
@@ -353,5 +429,34 @@ public class Operaciones implements InterfaceProxy{
         Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
         cipher.init(Cipher.DECRYPT_MODE, this.privateKey);
         return new String(cipher.doFinal(data));
+    }
+
+    public void addConvocatoriaUsario(byte[] key,String codigo){
+        try {
+            ((Postulante) this.userFactory.getUser(this.decrypt(key))).addConvocatoria(codigo);
+        } catch (IllegalBlockSizeException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (BadPaddingException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (NoSuchPaddingException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public ArrayList<String> getAllEmpresaUser(){
+        return this.userFactory.getAllEmpresasUsers();
+    }
+    
+    public String getIndexbyNameb(String name){
+        for (String c:this.userFactory.getAllEmpresasUsers()) {
+            if(((Empresa) this.userFactory.getUser(c)).getNombre().equals(name)){
+                return c;
+            }
+        }
+        return null;
     }
 }

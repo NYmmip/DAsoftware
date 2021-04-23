@@ -25,7 +25,7 @@ public class Proxy implements InterfaceProxy{
     @Override
     public byte[] performOperation(){
         try {
-            if(true){
+            if(this.operaciones.getUser(this.user).autLogin(this.user,this.pass)){
                 return this.encrypt(user,operaciones.performOperation());
             }
             return null;
