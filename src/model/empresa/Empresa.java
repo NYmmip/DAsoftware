@@ -162,7 +162,7 @@ public class Empresa extends Adapter implements Composite{
     }
     //---------------------------------METODOS INTERNOS--------------------------------------//
 
-    private int getIndexConvocatoria(String codigo){
+    public int getIndexConvocatoria(String codigo){
         int contador=0;
         for (Composite c: componentes) {
             if(c instanceof ConvocatoriaDinamica)
